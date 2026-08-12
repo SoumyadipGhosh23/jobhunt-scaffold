@@ -1,0 +1,110 @@
+# jobhunt config — tune these once you see real output
+
+locations:
+  tier_a: # full weight, always surface
+    - kolkata
+    - salt lake
+    - rajarhat
+    - new town
+    - howrah
+    - delhi
+    - new delhi
+    - gurgaon
+    - gurugram
+    - noida
+    - greater noida
+    - ghaziabad
+    - faridabad
+    - remote
+  tier_b: # only if exceptional
+    - bengaluru
+    - bangalore
+    - hyderabad
+  tier_b_score_threshold: 80
+  blocked: # rejected unless remote
+    - pune
+    - mumbai
+    - chennai
+    - ahmedabad
+    - indore
+    - jaipur
+
+role_keywords:
+  include:
+    - frontend
+    - front-end
+    - full stack
+    - fullstack
+    - software engineer
+    - sde
+    - react
+    - angular
+    - next.js
+    - node
+    - java
+    - spring boot
+    - product engineer
+    - web developer
+    - mern
+    - mean
+  reject:
+    - intern
+    - trainee
+    - fresher
+    - manager
+    - director
+    - vp
+    - principal
+    - architect
+    - staff
+    - qa
+    - sdet
+    - devops
+    - sre
+    - android
+    - ios
+    - flutter
+    - salesforce
+    - sap
+    - wordpress
+    - php
+    - sales
+    - recruit
+
+stack_bonus:
+  - react
+  - next.js
+  - angular
+  - typescript
+  - node
+  - express
+  - spring boot
+  - java
+  - postgres
+  - mongodb
+  - tailwind
+  - graphql
+  - docker
+  - aws
+  - kafka
+  - redis
+
+sources:
+  ats_boards: true
+  adzuna: true
+  jooble: true
+  remotive: false   # phase 2
+  remoteok: false    # phase 2
+  hn_hiring: false   # phase 2
+  email_bridge: false # phase 2
+
+adzuna_cities: # max 5, one call/city/day on free tier
+  - Kolkata
+  - Delhi
+  - Gurgaon
+  - Noida
+  - Bengaluru
+
+rank:
+  min_score_to_report: 55
+  max_jobs_in_report: 10
