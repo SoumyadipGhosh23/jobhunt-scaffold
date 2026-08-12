@@ -4,15 +4,10 @@
 
 greenhouse:
   - stripe
-  - notion
   - figma
-  - razorpay
   - postman
 
-lever:
-  - netflix
-  - brex
-  - rippling
+lever: []
 
 ashby:
   - linear
