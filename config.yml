@@ -1,13 +1,14 @@
-# jobhunt config — tune these once you see real output
+# Daily job-search preferences. Values are matched case-insensitively.
+
+resume:
+  path: SoumyadipGhosh_Resume_Main.pdf
 
 locations:
-  tier_a: # full weight, always surface
+  # First choice: Kolkata, major North Indian cities, and remote anywhere.
+  preferred:
     - kolkata
-    - salt lake
-    - rajarhat
-    - new town
-    - howrah
     - delhi
+    - delhi ncr
     - new delhi
     - gurgaon
     - gurugram
@@ -15,48 +16,89 @@ locations:
     - greater noida
     - ghaziabad
     - faridabad
+
+  remote_keywords:
     - remote
-  tier_b: # only if exceptional
+    - worldwide
+    - anywhere
+    - work from home
+    - wfh
+    - distributed
+    - home based
+    - telecommute
+  # Second choice.
+  secondary:
     - bengaluru
     - bangalore
     - hyderabad
-  tier_b_score_threshold: 80
-  blocked: # rejected unless remote
-    - pune
+    - secunderabad
+  # Third choice: other major Indian technology and business hubs.
+  tertiary:
     - mumbai
+    - navi mumbai
+    - pune
     - chennai
     - ahmedabad
+    - gandhinagar
     - indore
+    - kochi
+    - cochin
+    - coimbatore
+    - bhubaneswar
+    - thiruvananthapuram
+    - trivandrum
+    - surat
+    - vadodara
+    - nagpur
+    - goa
+    - mysuru
+    - mysore
+    - chandigarh
+    - mohali
+    - panchkula
     - jaipur
+    - lucknow
+    - dehradun
+    - salt lake
+    - rajarhat
+    - new town
+    - howrah
+  allow_remote_worldwide: true
+  allow_india_unspecified: true
 
+# Broad deterministic pre-filter. DeepSeek performs the resume-specific match.
 role_keywords:
   include:
     - frontend
     - front-end
     - full stack
+    - full-stack
     - fullstack
     - software engineer
+    - software developer
     - sde
+    - product engineer
+    - web developer
     - react
     - angular
     - next.js
     - node
     - java
     - spring boot
-    - product engineer
-    - web developer
     - mern
     - mean
   reject:
     - intern
+    - internship
     - trainee
     - fresher
     - manager
     - director
+    - vice president
     - vp
     - principal
     - architect
-    - staff
+    - staff engineer
     - qa
     - sdet
     - devops
@@ -69,42 +111,42 @@ role_keywords:
     - wordpress
     - php
     - sales
-    - recruit
+    - recruiter
+    - recruitment
 
-stack_bonus:
-  - react
-  - next.js
-  - angular
-  - typescript
-  - node
-  - express
-  - spring boot
-  - java
-  - postgres
-  - mongodb
-  - tailwind
-  - graphql
-  - docker
-  - aws
-  - kafka
-  - redis
+salary:
+  currency: INR
+  minimum_lpa: 8
+  preferred_lpa: 10
+  allow_undisclosed: true
 
 sources:
   ats_boards: true
   adzuna: true
   jooble: true
-  remotive: false   # phase 2
-  remoteok: false    # phase 2
-  hn_hiring: false   # phase 2
-  email_bridge: false # phase 2
+  remotive: true
+  remoteok: true
+  hn_hiring: true
+  email_bridge: false # LinkedIn/Naukri/etc. email alerts; separate credentialed phase.
 
-adzuna_cities: # max 5, one call/city/day on free tier
+# Adzuna free tier: one India request per city, maximum five cities per run.
+adzuna_cities:
   - Kolkata
   - Delhi
-  - Gurgaon
+  - Gurugram
   - Noida
   - Bengaluru
 
+jooble_locations:
+  - India
+  - Remote
+
 rank:
-  min_score_to_report: 55
-  max_jobs_in_report: 10
+  provider: deepseek
+  model: deepseek-v4-flash
+  min_score_to_report: 60
+  secondary_min_score: 70
+  tertiary_min_score: 78
+  candidate_limit: 60
+  batch_size: 12
+  max_jobs_in_report: 15

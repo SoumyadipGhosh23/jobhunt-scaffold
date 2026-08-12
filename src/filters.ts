@@ -2,25 +2,31 @@ import { createHash } from "node:crypto";
 
 import type { RawJob } from "./sources.js";
 
-export type LocationTier = "a" | "b" | "remote";
+export type LocationTier =
+  | "preferred"
+  | "secondary"
+  | "tertiary"
+  | "remote"
+  | "unknown";
 
 export interface FilterConfig {
   locations: {
-    tier_a: string[];
-    tier_b: string[];
-    blocked: string[];
+    preferred: string[];
+    secondary: string[];
+    tertiary: string[];
+    remoteKeywords: string[];
+    allowRemoteWorldwide: boolean;
+    allowIndiaUnspecified: boolean;
   };
   role_keywords: {
     include: string[];
     reject: string[];
   };
-  stack_bonus: string[];
 }
 
 export interface FilteredJob extends RawJob {
   fingerprint: string;
   locationTier: LocationTier;
-  stackMatches: string[];
 }
 
 export interface FilterResult {
@@ -53,15 +59,21 @@ function containsAny(value: string, keywords: string[]): boolean {
 }
 
 function classifyLocation(location: string, config: FilterConfig): LocationTier | null {
-  const remoteKeywords = ["remote", "worldwide", "work from home", "wfh"];
-  if (containsAny(location, remoteKeywords)) return "remote";
-  if (containsAny(location, config.locations.blocked)) return null;
-  if (containsAny(location, config.locations.tier_a)) return "a";
-  if (containsAny(location, config.locations.tier_b)) return "b";
+  if (
+    config.locations.allowRemoteWorldwide &&
+    containsAny(location, config.locations.remoteKeywords)
+  ) {
+    return "remote";
+  }
+  if (containsAny(location, config.locations.preferred)) return "preferred";
+  if (containsAny(location, config.locations.secondary)) return "secondary";
+  if (containsAny(location, config.locations.tertiary)) return "tertiary";
 
   // Aggregators often return only "India" for distributed or multi-city roles.
-  if (containsKeyword(location, "india")) return "b";
-  return null;
+  if (config.locations.allowIndiaUnspecified && containsKeyword(location, "india")) {
+    return "tertiary";
+  }
+  return "unknown";
 }
 
 export function jobFingerprint(job: RawJob): string {
@@ -107,19 +119,19 @@ export function filterAndDedupeJobs(
     }
     fingerprints.add(fingerprint);
 
-    const searchableText = `${job.title} ${job.description}`;
-    const stackMatches = config.stack_bonus.filter((keyword) =>
-      containsKeyword(searchableText, keyword),
-    );
-
-    jobs.push({ ...job, fingerprint, locationTier, stackMatches });
+    jobs.push({ ...job, fingerprint, locationTier });
   }
 
-  const tierOrder: Record<LocationTier, number> = { a: 0, remote: 1, b: 2 };
+  const tierOrder: Record<LocationTier, number> = {
+    preferred: 0,
+    remote: 1,
+    secondary: 2,
+    tertiary: 3,
+    unknown: 4,
+  };
   jobs.sort(
     (left, right) =>
       tierOrder[left.locationTier] - tierOrder[right.locationTier] ||
-      right.stackMatches.length - left.stackMatches.length ||
       left.company.localeCompare(right.company) ||
       left.title.localeCompare(right.title),
   );

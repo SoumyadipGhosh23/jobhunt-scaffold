@@ -1,5 +1,5 @@
 # ATS board tokens. Token is usually the lowercase company slug from their careers URL.
-# Run `npm run verify` after adding companies — it pings each board and flags dead tokens.
+# Run `yarn verify` after adding companies — it pings each board and flags dead tokens.
 # This is a small starter seed; expand toward ~60 as you find companies you'd apply to.
 
 greenhouse:
@@ -7,7 +7,13 @@ greenhouse:
   - figma
   - postman
 
-lever: []
+lever:
+  - dnb
+  - netomi
+  - kobie
+  - sitetracker
+  - pditechnologies
+  - highspot
 
 ashby:
   - linear

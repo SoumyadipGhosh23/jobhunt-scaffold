@@ -1,31 +1,49 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
-import type { FilteredJob } from "./filters.js";
+import type { RankedJob } from "./rank.js";
 
 export interface ReportSummary {
   fetched: number;
   eligible: number;
+  ranked: number;
   sourceErrors: number;
+  deepSeekTokens: number;
 }
 
 function escapeMarkdown(value: string): string {
   return value.replace(/([\\`*_[\]<>])/g, "\\$1");
 }
 
-function compactDescription(value: string, maxLength = 420): string {
+function compactDescription(value: string, maxLength = 360): string {
   if (value.length <= maxLength) return value;
   return `${value.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
-function tierLabel(tier: FilteredJob["locationTier"]): string {
-  if (tier === "a") return "Tier A";
-  if (tier === "b") return "Tier B — ranking gate applies";
-  return "Remote";
+function tierLabel(tier: RankedJob["locationTier"]): string {
+  if (tier === "preferred") return "First choice";
+  if (tier === "secondary") return "Second choice";
+  if (tier === "tertiary") return "Third choice";
+  if (tier === "remote") return "Remote worldwide";
+  return "Location requires review";
+}
+
+function list(values: string[], emptyLabel: string): string {
+  return values.length ? values.map(escapeMarkdown).join(", ") : emptyLabel;
+}
+
+function safeUrl(value: string): string | undefined {
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return undefined;
+    return url.toString().replace(/\(/g, "%28").replace(/\)/g, "%29");
+  } catch {
+    return undefined;
+  }
 }
 
 export function renderReport(
-  jobs: FilteredJob[],
+  jobs: RankedJob[],
   summary: ReportSummary,
   generatedAt: Date = new Date(),
 ): string {
@@ -34,22 +52,27 @@ export function renderReport(
     const title = escapeMarkdown(job.title || "Untitled role");
     const company = escapeMarkdown(job.company || "Unknown company");
     const location = escapeMarkdown(job.location || "Unspecified");
-    const stack = job.stackMatches.length
-      ? job.stackMatches.map(escapeMarkdown).join(", ")
-      : "No configured stack keywords found";
-    const description = compactDescription(job.description);
-    const titleLine = job.url
-      ? `## ${index + 1}. [${title}](${job.url}) — ${company}`
+    const salary = escapeMarkdown(job.salaryAssessment || job.salaryText || "Not disclosed");
+    const url = safeUrl(job.url);
+    const titleLine = url
+      ? `## ${index + 1}. [${title}](${url}) — ${company}`
       : `## ${index + 1}. ${title} — ${company}`;
 
     return [
       titleLine,
       "",
+      `- Match score: **${job.score}/100**`,
       `- Location: ${location} (${tierLabel(job.locationTier)})`,
+      `- Location assessment: ${escapeMarkdown(job.locationAssessment)}`,
+      `- Compensation: ${salary} (${job.salaryFit})`,
+      `- Matched resume skills: ${list(job.matchedSkills, "None identified")}`,
+      `- Missing or weaker skills: ${list(job.missingSkills, "None material")}`,
       `- Source: ${job.source}`,
-      `- Stack matches: ${stack}`,
       "",
-      description || "No description supplied by source.",
+      escapeMarkdown(job.reason),
+      "",
+      escapeMarkdown(compactDescription(job.description)) ||
+        "No description supplied by source.",
     ].join("\n");
   });
 
@@ -58,7 +81,8 @@ export function renderReport(
     "",
     `Generated at ${timestamp}`,
     "",
-    `Fetched ${summary.fetched} jobs; ${summary.eligible} passed deterministic filters; ${summary.sourceErrors} source requests failed.`,
+    `Fetched ${summary.fetched} jobs; ${summary.eligible} passed deterministic filters; ${summary.ranked} passed DeepSeek ranking; ${summary.sourceErrors} source requests failed.`,
+    `DeepSeek usage: ${summary.deepSeekTokens} tokens.`,
     "",
     sections.length ? sections.join("\n\n---\n\n") : "No new matching jobs found.",
     "",

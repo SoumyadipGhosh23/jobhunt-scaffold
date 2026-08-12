@@ -10,7 +10,8 @@
     "run": "tsx src/main.ts run"
   },
   "dependencies": {
-    "js-yaml": "^4.1.0"
+    "js-yaml": "^4.1.0",
+    "pdf-parse": "^2.4.5"
   },
   "devDependencies": {
     "tsx": "^4.19.0",
