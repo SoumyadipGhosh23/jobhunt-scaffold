@@ -3,12 +3,9 @@
 locations:
   tier_a: # full weight, always surface
     - kolkata
-    - salt lake
-    - rajarhat
-    - new town
-    - howrah
     - delhi
     - new delhi
+    - delhi ncr
     - gurgaon
     - gurugram
     - noida
@@ -20,9 +17,9 @@ locations:
     - bengaluru
     - bangalore
     - hyderabad
+    - any other major IT Hub in India
   tier_b_score_threshold: 80
   blocked: # rejected unless remote
-    - pune
     - mumbai
     - chennai
     - ahmedabad

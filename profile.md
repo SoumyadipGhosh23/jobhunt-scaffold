@@ -28,6 +28,7 @@ B.Tech, Computer Science and Engineering, Techno International Newtown. CGPA 8.7
 
 ## What I'm looking for
 - Full-time SDE / frontend / full-stack roles.
+- Minimum expected salary: ₹8 lakh per annum.
 - Kolkata or Delhi NCR on-site, or remote (India or global). Open to relocating
   for Bengaluru/Hyderabad only if the role is unusually strong.
 - Comfortable in React/Next.js/Angular on the frontend, and equally comfortable
