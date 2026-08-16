@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname } from "node:path";
 
+import "dotenv/config";
 import yaml from "js-yaml";
 
 import { filterAndDedupeJobs, type FilterConfig, type FilteredJob } from "./filters.js";
